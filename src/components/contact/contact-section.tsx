@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function ContactSection() {
   return (
@@ -40,39 +40,59 @@ export function ContactSection() {
         I&apos;m always Open to freelance & collaborations.
       </motion.p>
 
-      <motion.form
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="mt-8 max-w-xl space-y-6"
-        onSubmit={(e) => e.preventDefault()}
+        className="mt-8 max-w-xl"
       >
-        <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input id="name" placeholder="Your name" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="you@example.com" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="message">Message</Label>
-          <Textarea
-            id="message"
-            placeholder="Tell me about your project..."
-            rows={5}
-          />
-        </div>
-        <Button
-          type="submit"
-          size="lg"
-          className="bg-accent-cyan text-zinc-950 hover:bg-cyan-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)]"
-        >
-          <Send size={18} />
-          Send message
-        </Button>
-      </motion.form>
+        <Card className="glass glass-hover rounded-2xl p-0 gap-0">
+          <CardContent className="py-7 px-6">
+            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-xs font-medium uppercase tracking-widest text-dim">
+                  NAME
+                </Label>
+                <Input
+                  id="name"
+                  placeholder="Your name"
+                  className="bg-white/5 border-white/10 placeholder:text-dim"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs font-medium uppercase tracking-widest text-dim">
+                  EMAIL
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  className="bg-white/5 border-white/10 placeholder:text-dim"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="message" className="text-xs font-medium uppercase tracking-widest text-dim">
+                  MESSAGE
+                </Label>
+                <Textarea
+                  id="message"
+                  placeholder="Tell me about your project..."
+                  rows={5}
+                  className="bg-white/5 border-white/10 placeholder:text-dim resize-none"
+                />
+              </div>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full bg-accent-cyan text-zinc-950 hover:bg-cyan-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] lowercase tracking-wide"
+              >
+                send message
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
 
     </SectionWrapper>
   );
