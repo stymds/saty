@@ -116,16 +116,15 @@ function resolveBubbleCollision(b1: Bubble, b2: Bubble): void {
 
 export function FloatingBubbles() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
   const bubblesRef = useRef<Bubble[]>([]);
   const animationRef = useRef<number>(0);
+  const scrollRef = useRef(0);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    scrollRef.current = window.scrollY;
 
     // More bubbles on larger screens
     const bubbleCount = width >= 768 ? 9 : 6;
@@ -136,11 +135,22 @@ export function FloatingBubbles() {
 
     const animate = () => {
       const currentBubbles = bubblesRef.current;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      // Scroll reactivity
+      const scrollDelta = window.scrollY - scrollRef.current;
+      scrollRef.current = window.scrollY;
 
       // Update positions
       for (const bubble of currentBubbles) {
+        // Apply scroll impulse
+        bubble.vy += scrollDelta * 0.08;
+
+        // Clamp velocities
+        bubble.vx = Math.max(-2.5, Math.min(2.5, bubble.vx));
+        bubble.vy = Math.max(-2.5, Math.min(2.5, bubble.vy));
+
         bubble.x += bubble.vx;
         bubble.y += bubble.vy;
 
@@ -185,7 +195,7 @@ export function FloatingBubbles() {
   }, []);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-[1] pointer-events-none">
       {bubbles.map((bubble) => (
         <div
           key={bubble.id}

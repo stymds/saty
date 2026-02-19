@@ -1,12 +1,25 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 5rem;
+}
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-heading: var(--heading);
+  --color-sub: var(--sub);
+  --color-dim: var(--dim);
+  --color-accent-cyan: var(--accent-cyan);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,6 +60,10 @@
 
 :root {
   --radius: 0.625rem;
+  --heading: oklch(0.967 0.001 286.38);
+  --sub: oklch(0.871 0.006 286.29);
+  --dim: oklch(0.552 0.016 285.94);
+  --accent-cyan: oklch(0.789 0.154 195);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -81,6 +98,10 @@
 }
 
 .dark {
+  --heading: oklch(0.967 0.001 286.38);
+  --sub: oklch(0.871 0.006 286.29);
+  --dim: oklch(0.552 0.016 285.94);
+  --accent-cyan: oklch(0.789 0.154 195);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -121,6 +142,28 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.glass {
+  background: oklch(1 0 0 / 6%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid oklch(1 0 0 / 10%);
+  box-shadow:
+    0 0 20px oklch(0.789 0.154 195 / 5%),
+    0 8px 32px oklch(0 0 0 / 40%);
+}
+
+.glass-hover {
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.glass-hover:hover {
+  background: oklch(1 0 0 / 8%);
+  border-color: oklch(0.789 0.154 195 / 20%);
+  box-shadow:
+    0 0 30px oklch(0.789 0.154 195 / 10%),
+    0 8px 32px oklch(0 0 0 / 50%);
 }
 
 @keyframes blink {
