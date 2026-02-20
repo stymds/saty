@@ -26,10 +26,10 @@ export function Footer() {
           &copy; 2026 Satyam Das
         </div>
         <div className="flex items-center gap-4">
-          <a href="mailto:satyamdas020399@gmail.com" className="text-dim transition-colors hover:text-heading">
+          <a href="mailto:hi@satyamdas.site" className="text-dim transition-colors hover:text-heading">
             <Mail className="h-5 w-5" />
           </a>
-          <a href="https://instagram.com/saty.io" target="_blank" rel="noopener noreferrer" className="text-dim transition-colors hover:text-heading">
+          <a href="https://instagram.com/saty.site" target="_blank" rel="noopener noreferrer" className="text-dim transition-colors hover:text-heading">
             <InstagramIcon className="h-5 w-5" />
           </a>
           <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-dim transition-colors hover:text-heading">
