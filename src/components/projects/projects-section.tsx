@@ -12,6 +12,7 @@ const projects = [
     tech: ["Next.js", "OpenAI", "Spotify", "Supabase"],
     status: "Live",
     linkText: "View project",
+    linkHref: "https://vibelist.satyamdas.site/",
   },
   {
     title: "Bitebox",
@@ -26,8 +27,9 @@ const projects = [
     description:
       "E-commerce analytics dashboard providing real-time insights into sales, customer behavior, and inventory trends.",
     tech: ["Next.js", "Supabase", "Tailwind", "Charts"],
-    status: "Coming Soon",
-    linkText: "Coming soon",
+    status: "Live",
+    linkText: "View project",
+    linkHref: "https://pulsecom.satyamdas.site/",
   },
 ];
 
@@ -61,6 +63,7 @@ export function ProjectsSection() {
             tech={project.tech}
             status={project.status}
             linkText={project.linkText}
+            linkHref={"linkHref" in project ? project.linkHref : undefined}
             index={index}
           />
         ))}
