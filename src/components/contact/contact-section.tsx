@@ -1,26 +1,85 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "motion/react";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { SectionWrapper } from "@/components/shared/section-wrapper";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { formatMessage } from "./format-text";
+
+type FormStatus = "idle" | "loading" | "success" | "error";
 
 export function ContactSection() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [manualFlip, setManualFlip] = useState<boolean | null>(null);
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [statusMessage, setStatusMessage] = useState("");
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   const hasContent = !!(name || email || message);
   const isFlipped = manualFlip !== null ? manualFlip : hasContent;
+  const isDisabled = status === "loading" || status === "success";
 
   const formattedMessage = formatMessage(message);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (isDisabled) return;
+
+    // Client-side validation
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setStatus("error");
+      setStatusMessage("Please fill in all fields.");
+      return;
+    }
+
+    setStatus("loading");
+    setStatusMessage("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim(),
+          honeypot: honeypotRef.current?.value || "",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setStatus("error");
+        setStatusMessage(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+
+      setStatus("success");
+      setStatusMessage("Message sent! I'll get back to you soon.");
+
+      // Auto-reset after 5 seconds
+      setTimeout(() => {
+        setName("");
+        setEmail("");
+        setMessage("");
+        setManualFlip(null);
+        setStatus("idle");
+        setStatusMessage("");
+      }, 5000);
+    } catch {
+      setStatus("error");
+      setStatusMessage("Network error. Please check your connection and try again.");
+    }
+  }
 
   return (
     <SectionWrapper id="contact">
@@ -63,7 +122,7 @@ export function ContactSection() {
         >
           <Card className="glass glass-hover rounded-2xl p-0 gap-0">
             <CardContent className="py-7 px-6">
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="space-y-2">
                   <Label
                     htmlFor="name"
@@ -78,7 +137,9 @@ export function ContactSection() {
                     onChange={(e) => {
                       setName(e.target.value);
                       setManualFlip(null);
+                      if (status === "error") setStatus("idle");
                     }}
+                    disabled={isDisabled}
                     className="bg-white/5 border-white/10 placeholder:text-dim"
                   />
                 </div>
@@ -97,7 +158,9 @@ export function ContactSection() {
                     onChange={(e) => {
                       setEmail(e.target.value);
                       setManualFlip(null);
+                      if (status === "error") setStatus("idle");
                     }}
+                    disabled={isDisabled}
                     className="bg-white/5 border-white/10 placeholder:text-dim"
                   />
                 </div>
@@ -110,23 +173,72 @@ export function ContactSection() {
                   </Label>
                   <Textarea
                     id="message"
-                    placeholder="Tell me about your project..."
+                    placeholder="Describe your project or inquiry. You can include links to documents, files, or resources if needed."
                     rows={7}
                     value={message}
                     onChange={(e) => {
                       setMessage(e.target.value);
                       setManualFlip(null);
+                      if (status === "error") setStatus("idle");
                     }}
+                    disabled={isDisabled}
                     className="bg-white/5 border-white/10 placeholder:text-dim resize-none !field-sizing-fixed overflow-y-auto"
                   />
                 </div>
+
+                {/* Honeypot — hidden from real users */}
+                <input
+                  ref={honeypotRef}
+                  type="text"
+                  name="website"
+                  autoComplete="off"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="absolute -left-[9999px] top-0 h-0 w-0 opacity-0"
+                />
+
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full bg-accent-cyan text-zinc-950 hover:bg-cyan-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] lowercase tracking-wide"
+                  disabled={isDisabled}
+                  className="w-full bg-accent-cyan text-zinc-950 hover:bg-cyan-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] lowercase tracking-wide disabled:opacity-60"
                 >
-                  send message
+                  {status === "loading" && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {status === "success" && (
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                  )}
+                  {status === "loading"
+                    ? "sending..."
+                    : status === "success"
+                      ? "sent!"
+                      : "send message"}
                 </Button>
+
+                {/* Status message */}
+                <AnimatePresence>
+                  {statusMessage && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                      className={`flex items-center gap-2 text-sm ${
+                        status === "success"
+                          ? "text-green-400"
+                          : "text-red-400"
+                      }`}
+                    >
+                      {status === "success" ? (
+                        <CheckCircle2 className="h-4 w-4 shrink-0" />
+                      ) : (
+                        <AlertCircle className="h-4 w-4 shrink-0" />
+                      )}
+                      {statusMessage}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </form>
             </CardContent>
           </Card>

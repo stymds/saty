@@ -1,4 +1,5 @@
 import React from "react";
+import { formatRegex } from "@/lib/format-regex";
 
 const sizeMap: Record<string, string> = { big: "text-lg", small: "text-xs" };
 const colorMap: Record<string, string> = {
@@ -7,20 +8,6 @@ const colorMap: Record<string, string> = {
   yellow: "text-yellow-400",
   green: "text-green-400",
 };
-
-const formatRegex = new RegExp(
-  [
-    String.raw`\*(?<bold>.+?)\*`,
-    String.raw`_(?<italic>.+?)_`,
-    String.raw`~(?<strike>.+?)~`,
-    // eslint-disable-next-line no-useless-backreference
-    String.raw`\x60(?<code>.+?)\x60`,
-    String.raw`(?<!\w)\+(?<underline>.+?)\+(?!\w)`,
-    String.raw`\{(?<bracket>big|small|red|pink|yellow|green):(?<bracketText>(?:[^{}]|\{[^{}]*\})+)\}`,
-    String.raw`\[(?<linkText>[^\]]+)\]\((?<linkUrl>https?:\/\/[^\s)]+)\)`,
-  ].join("|"),
-  "g"
-);
 
 function formatText(text: string): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
