@@ -11,7 +11,7 @@ const techStack = [
   "Tailwind CSS",
   "Shadcn",
   "Motion",
-  "GASP",
+  "GSAP",
   "PostgreSQL",
 ];
 
